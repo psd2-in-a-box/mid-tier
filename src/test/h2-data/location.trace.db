@@ -1,0 +1,6 @@
+2017-02-03 01:29:37 jdbc[9]: exception
+org.h2.jdbc.JdbcSQLException: Value too long for column "AMPLITUDE VARCHAR(10) NOT NULL": "'Bandelowski' (11)"; SQL statement:
+ALTER TABLE PUBLIC.CUSTOMER ALTER COLUMN AMPLITUDE VARCHAR(10) [22001-192]
+2017-02-03 01:29:55 jdbc[10]: exception
+org.h2.jdbc.JdbcSQLException: Value too long for column "AMPLITUDE VARCHAR(10) NOT NULL": "'Bandelowski' (11)"; SQL statement:
+ALTER TABLE PUBLIC.CUSTOMER ALTER COLUMN AMPLITUDE VARCHAR(10) [22001-192]
