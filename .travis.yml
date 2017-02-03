@@ -17,7 +17,7 @@ install:
   - export M2_HOME=$PWD/apache-maven-3.3.9
   - export PATH=$PWD/apache-maven-3.3.9/bin:$PATH
 
-script: mvn clean verify
+script: mvn clean package
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
