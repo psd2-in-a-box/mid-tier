@@ -11,8 +11,8 @@ gcloud container clusters get-credentials hackathon
 # Test if deployed??
 kubectl get deployments $NAME
 if [ $? -eq 1 ]; then
-  kubectl run $NAME --image=$1 --hostport=80 --port=80;
-  kubectl expose deployment $NAME --type="LoadBalancer";
+  kubectl run $NAME --image=$1 --port=8080;
+  kubectl expose deployment $NAME --port=80 --target-port=8080 --type="LoadBalancer";
 else
   kubectl set image deployment/$NAME $NAME=$1
 fi
