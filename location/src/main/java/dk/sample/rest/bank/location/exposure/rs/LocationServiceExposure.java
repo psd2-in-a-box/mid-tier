@@ -53,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exposing customer as REST service
+ * Exposing location as REST service
  */
 @Stateless
 @Path("/locations")
