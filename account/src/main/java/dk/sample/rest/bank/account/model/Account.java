@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import dk.sample.rest.common.persistence.jpa.AbstractAuditable;
+import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -52,6 +53,9 @@ public class Account extends AbstractAuditable {
     @Column(name = "CUSTOMER", nullable = false)
     private String customer;
 
+    @Column(name = "LATEST")
+    private Instant latest;
+
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Transaction> transactions;
 
@@ -68,6 +72,7 @@ public class Account extends AbstractAuditable {
         this.name = name;
         this.customer = customer;
         this.balance = new BigDecimal(0);
+        latest = Instant.ofEpochMilli(0);
         transactions = new HashSet<>();
         reconciledTransactions = new HashSet<>();
         tId = UUID.randomUUID().toString();
@@ -109,23 +114,32 @@ public class Account extends AbstractAuditable {
         return Collections.unmodifiableSet(reconciledTransactions);
     }
 
-    public boolean addTransaction(String id, String description, BigDecimal amount) {
-        Transaction transaction = new Transaction(this, id, amount, description);
+    public boolean addTransaction(String id, String description, BigDecimal amount, Instant timestamp) {
+        return addTransaction(new Transaction(this, id, amount, description, timestamp));
+    }
+
+    public void addTransaction(String description, BigDecimal amount) {
+        addTransaction(new Transaction(this, amount, description));
+    }
+
+    private boolean addTransaction(Transaction transaction) {
         if (!transactions.contains(transaction)) {
             transactions.add(transaction);
-            balance = balance.add(amount);
+            balance = balance.add(transaction.getAmount());
+            if (latest.isBefore(transaction.getTimestamp())) {
+                latest = transaction.getTimestamp();
+            }
             return true;
         }
         return false;
     }
 
-    public void addTransaction(String description, BigDecimal amount) {
-        transactions.add(new Transaction(this, amount, description));
-        balance = balance.add(amount);
-    }
-
     public void addReconciledTransaction(Transaction transaction, Boolean reconciled, String note) {
         reconciledTransactions.add(new ReconciledTransaction(reconciled, note, transaction));
+    }
+
+    public Instant getLatest() {
+        return latest;
     }
 
     @Override
