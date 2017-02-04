@@ -1,5 +1,6 @@
 package dk.sample.rest.bank.account.exposure.rs.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class AccountRepresentation {
     private String regNo;
     private String accountNo;
     private String name;
+    private String balance;
 
     @EmbeddedResource("transactions")
     private Collection<TransactionRepresentation> transactions;
@@ -53,6 +55,7 @@ public class AccountRepresentation {
         this.regNo = account.getRegNo();
         this.accountNo = account.getAccountNo();
         this.name = account.getName();
+        this.balance = account.getBalance().toString();
         this.transactionsResource = new HALLink.Builder(uriInfo.getBaseUriBuilder()
             .path(TransactionServiceExposure.class)
             .build(account.getRegNo(), account.getAccountNo())).build();
@@ -88,6 +91,15 @@ public class AccountRepresentation {
             value = "the human readable name of the account.")
     public String getName() {
         return name;
+    }
+
+    @ApiModelProperty(
+            access = "public",
+            name = "balance",
+            example = "1234.56",
+            value = "the balance of the account.")
+    public String getBalance() {
+        return balance;
     }
 
     @ApiModelProperty(

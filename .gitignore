@@ -98,3 +98,7 @@ crashlytics.properties
 crashlytics-build.properties
 
 # Created by .ignore support plugin (hsz.mobi)
+
+
+# Google Cloud Credentials
+FutureFinance-9562e6d23f91.json
