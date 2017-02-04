@@ -158,7 +158,7 @@ public class CustomerServiceExposure {
             notes = "PUT is used to create a new customer from scratch and may be used to alter the name of the customer",
             consumes = "application/json",
             produces = "application/hal+json, application/hal+json;concept=customer;v=1, application/hal+json;concept=customer;v=2",
-            nickname = "updateAccount")
+            nickname = "updateCustomer")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Could not update or create the customer", response = ErrorRepresentation.class),
             @ApiResponse(code = 415, message = "The content-Type was not supported"),

@@ -160,7 +160,7 @@ public class LocationServiceExposure {
             notes = "PUT is used to create a new location from scratch and may be used to alter the values attached to the location",
             consumes = "application/json",
             produces = "application/hal+json, application/hal+json;concept=location;v=1, application/hal+json;concept=location;v=2",
-            nickname = "updateAccount")
+            nickname = "updateLocation")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Could not update or create the location", response = ErrorRepresentation.class),
             @ApiResponse(code = 415, message = "The content-Type was not supported"),

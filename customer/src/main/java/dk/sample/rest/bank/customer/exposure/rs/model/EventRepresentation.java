@@ -41,7 +41,7 @@ public class EventRepresentation {
         this.category = event.getCategory();
         this.self = new HALLink.Builder(uriInfo.getBaseUriBuilder()
                 .path(CustomerEventServiceExposure.class)
-                .path(CustomerEventServiceExposure.class, "getSingle")
+                .path(CustomerEventServiceExposure.class, "getSingleCustomerEvents")
                 .build(event.getCategory(), event.getId())).build();
         this.origin = new HALLink.Builder(uriInfo.getBaseUriBuilder()
                 .path(event.getOrigin() != null ? event.getOrigin().getPath() : "no path")

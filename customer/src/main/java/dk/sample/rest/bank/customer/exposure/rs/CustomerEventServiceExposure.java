@@ -79,12 +79,12 @@ public class CustomerEventServiceExposure {
             },
             tags = {"interval", "events"},
             produces = "application/hal+json,  application/hal+json;concept=events;v=1",
-            nickname = "listAllEvents"
+            nickname = "listAllCustomerEvents"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
         })
-    public Response listAll(@Context UriInfo uriInfo, @Context Request request,
+    public Response listAllCustomerEvents(@Context UriInfo uriInfo, @Context Request request,
                             @HeaderParam("Accept") String accept, @QueryParam("interval") String interval) {
         return eventsProducers.getOrDefault(accept, this::handleUnsupportedContentType)
                 .getResponse(uriInfo, request, interval);
@@ -107,12 +107,12 @@ public class CustomerEventServiceExposure {
             },
             tags = {"interval", "events"},
             produces = "application/hal+json,  application/hal+json;concept=eventcategory;v=1",
-            nickname = "getEventsByCategory"
+            nickname = "getCustomerEventsByCategory"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
         })
-    public Response getByCategory(@Context UriInfo uriInfo, @Context Request request,
+    public Response getCustomerEventsByCategory(@Context UriInfo uriInfo, @Context Request request,
                                   @HeaderParam("Accept") String accept, @PathParam("category") String category,
                                   @QueryParam("interval") String interval) {
         return eventCategoryProducers.getOrDefault(accept, this::handleUnsupportedContentType)
@@ -135,12 +135,12 @@ public class CustomerEventServiceExposure {
             },
             tags = {"immutable", "events"},
             produces = "application/hal+json,  application/hal+json;concept=event;v=1",
-            nickname = "getEvent")
+            nickname = "getCustomerEvent")
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "No event found."),
             @ApiResponse(code = 415, message = "Content type not supported.")
             })
-    public Response getSingle(@Context UriInfo uriInfo, @Context Request request,
+    public Response getSingleCustomerEvents(@Context UriInfo uriInfo, @Context Request request,
                               @HeaderParam("Accept") String accept, @PathParam("category") String category,
                               @PathParam("id") String id) {
         return eventProducers.getOrDefault(accept, this::handleUnsupportedContentType)

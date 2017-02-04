@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class LocationServiceExposureTest {
 
     @Mock
@@ -65,7 +65,6 @@ public class LocationServiceExposureTest {
 
         UriInfo ui = mock(UriInfo.class);
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
-        when(ui.getPath()).thenReturn("http://mock");
 
         when(archivist.getLocation("57.0214422", "9.8906541,16")).thenReturn(new Location("57.0214422", "9.8906541,16", "2"));
 
@@ -98,7 +97,6 @@ public class LocationServiceExposureTest {
         when(loc.getLatitude()).thenReturn("57.0214422");
         when(loc.getLongitude()).thenReturn("9.8906541,16");
         when(loc.getAmplitude()).thenReturn("56");
-        when(loc.getNumber()).thenReturn("12");
 
         when(archivist.findPosition("57.0214422", "9.8906541,16")).thenReturn(Optional.empty());
 
@@ -126,7 +124,6 @@ public class LocationServiceExposureTest {
         when(locationUpdate.getLatitude()).thenReturn("57.0214422");
         when(locationUpdate.getLongitude()).thenReturn("9.8906541,16");
         when(locationUpdate.getAmplitude()).thenReturn("2");
-        when(locationUpdate.getNumber()).thenReturn("1");
 
         when(archivist.findPosition("57.0214422", "9.8906541,16")).thenReturn(Optional.of(location));
 
@@ -145,11 +142,8 @@ public class LocationServiceExposureTest {
     public void testCreateInvalidRequest() throws Exception {
         Request request = mock(Request.class);
         UriInfo ui = mock(UriInfo.class);
-        when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
-        when(ui.getPath()).thenReturn("http://mock");
 
         LocationUpdateRepresentation locationUpdate = mock(LocationUpdateRepresentation.class);
-        when(locationUpdate.getLatitude()).thenReturn("57.0214422");
 
         service.createOrUpdate(ui, request, "57.0214422", "9.8906541,16", locationUpdate);
         fail("Should have thrown exception before this step");
