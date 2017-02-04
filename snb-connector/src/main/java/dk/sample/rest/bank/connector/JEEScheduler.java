@@ -22,6 +22,12 @@ import java.io.IOException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.core.MediaType; 
+import java.util.Map;
+import dk.sample.rest.bank.connector.snb.*;
+import javax.ws.rs.core.MultivaluedHashMap;
+
 
 /**
  * Scheduler of jobs
@@ -54,15 +60,27 @@ public class JEEScheduler {
 
 		try {
     	Client client = ClientBuilder.newClient();
-	    Response response = client.register(new Authenticator(username, password))
+		//Client client = new ResteasyClientBuilder()
+        //           .defaultProxy("webproxy.nykreditnet.net", 8080, "http")
+        //           .build();
+
+		String usernameAndPassword = username + ":" + password;
+        String authorizationHeaderName = "Authorization";
+        String authorizationHeaderValue = "Basic " + java.util.Base64.getEncoder().encodeToString( usernameAndPassword.getBytes() );
+
+ //register(new Authenticator(username, password))
+	    Response response = client
 			.target("http://api.futurefinance.io/api/accounts/4574000000")
-			.request()
+			.request(MediaType.APPLICATION_JSON)
+			.header(authorizationHeaderName, authorizationHeaderValue)
 			.get();
-    	LOG.error("RESPONSE - " + response);
+			String account = response.readEntity(String.class);
+   			LOG.error("RESPONSE: " + account);
 		} catch (Exception e) {
 			LOG.error("EXCEPTION: " + e);
 		}
 	}
+
 
 	class Authenticator implements ClientRequestFilter {
 	    private final String user;
@@ -74,7 +92,7 @@ public class JEEScheduler {
     	}
 
     	public void filter(ClientRequestContext requestContext) throws IOException {
-        	MultivaluedMap<String, Object> headers = requestContext.getHeaders();
+        	MultivaluedMap<String, String> headers = new MultivaluedHashMap(); //requestContext.getHeaders();
         	final String basicAuthentication = getBasicAuthentication();
         	headers.add("Authorization", basicAuthentication);
 	    }
@@ -82,7 +100,7 @@ public class JEEScheduler {
     	private String getBasicAuthentication() {
         	String token = this.user + ":" + this.password;
         	try {
-            	return "BASIC " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
+            	return "Basic " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
         	} catch (UnsupportedEncodingException ex) {
             	throw new IllegalStateException("Cannot encode with UTF-8", ex);
         	}
