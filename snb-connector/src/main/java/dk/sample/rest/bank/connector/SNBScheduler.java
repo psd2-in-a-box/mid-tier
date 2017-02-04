@@ -1,6 +1,7 @@
 package dk.sample.rest.bank.connector;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import dk.nykredit.jackson.dataformat.hal.HALLink;
 import dk.nykredit.jackson.dataformat.hal.HALMapper;
 import dk.sample.rest.bank.account.model.Account;
 import dk.sample.rest.bank.account.persistence.AccountArchivist;
@@ -23,9 +24,12 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
-import javax.transaction.Transactional;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -46,6 +50,7 @@ public class SNBScheduler {
     private SNBScheduler self;
 
     @Schedule(hour = "*", minute = "*/5", second = "0")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void doTimeout() {
         LOG.info("Running account poll");
         createRequest();
@@ -76,7 +81,7 @@ public class SNBScheduler {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void handleAccount(Client client, SNBAccount account) {
         String reg = account.getAccountNumber().substring(0, 4);
         String konto = account.getAccountNumber().substring(4);
@@ -84,23 +89,70 @@ public class SNBScheduler {
         Account domainAccount = exists.orElse(new Account(reg, konto, String.format("%s-%s", reg, konto),
                 account.getOwner().getCustomerNumber()));
 
-        SNBTransactions transactions = client
-                .target(URI.create(account.getTransactions().getHref()))
-                .request()
-                .get(SNBTransactions.class);
-        transactions.getTransactions().forEach(transaction -> {
-            domainAccount.addTransaction(transaction.getId(), transaction.getText(), transaction.getAmount());
-        });
-
+        int txCount = domainAccount.getTransactions().size();
+        handleTransactions(client, domainAccount, URI.create(account.getTransactions().getHref()));
         domainAccount.setBalance(account.getBalance());
 
+        if (txCount != domainAccount.getTransactions().size()) {
+            LOG.info("Added {} new transactions to {}", domainAccount.getTransactions().size() - txCount, domainAccount);
+        }
+
         archivist.save(domainAccount);
+    }
+
+    private void handleTransactions(Client client, Account account, URI uri) {
+        SNBTransactions transactions = client
+                .target(uri)
+                .request()
+                .get(SNBTransactions.class);
+        TransactionsStatus next = new TransactionsStatus(transactions.getNext());
+        transactions.getTransactions().forEach(transaction -> {
+            if (!account.addTransaction(transaction.getId(), transaction.getText(), transaction.getAmount())) {
+                next.stop();
+            }
+        });
+        next.getNext().ifPresent(nextUri -> handleTransactions(client, account, nextUri));
+    }
+
+    /**
+     * Handle if more transactions should be read.
+     */
+    static class TransactionsStatus {
+
+        private static final Pattern PAGE = Pattern.compile("page=(\\d+)");
+
+        private final URI next;
+        private Boolean proceed = true;
+
+        public TransactionsStatus(HALLink next) {
+            URI nextURI = null;
+            if (next != null) {
+                nextURI = URI.create(next.getHref());
+                Matcher m = PAGE.matcher(nextURI.getQuery());
+                if (!m.matches() || Integer.parseInt(m.group(1)) > 2) {
+                    nextURI = null;
+                }
+            }
+            this.next = nextURI;
+        }
+
+        public void stop() {
+            proceed = false;
+        }
+
+        public Optional<URI> getNext() {
+            if (proceed) {
+                return Optional.ofNullable(next);
+            } else {
+                return Optional.empty();
+            }
+        }
     }
 
     /**
      * Filter to add authorization header to requests.
      */
-    class Authenticator implements ClientRequestFilter {
+    static class Authenticator implements ClientRequestFilter {
 
         private final String credentials;
 
