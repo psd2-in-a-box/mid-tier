@@ -121,6 +121,8 @@ public class AccountServiceExposureTest {
         assertEquals("new name", resp.getName());
         assertEquals("5479", resp.getRegNo());
         assertEquals("12345678", resp.getAccountNo());
+        assertEquals("0", existingAcc.getBalance().toString());
+        assertEquals("0", resp.getBalance().toString());
         assertEquals("http://mock/accounts/5479-12345678", resp.getSelf().getHref());
     }
 

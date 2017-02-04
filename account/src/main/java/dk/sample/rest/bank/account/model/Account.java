@@ -1,6 +1,7 @@
 package dk.sample.rest.bank.account.model;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +43,9 @@ public class Account extends AbstractAuditable {
     @Column(name = "NAME", length = 40, nullable = false)
     private String name;
 
+    @Column(name = "BALANCE", nullable = false)
+    private BigDecimal balance;
+
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Transaction> transactions;
@@ -57,6 +61,7 @@ public class Account extends AbstractAuditable {
         this.regNo = regNo;
         this.accountNo = accountNo;
         this.name = name;
+        balance = new BigDecimal(0);
         transactions = new HashSet<>();
         reconciledTransactions = new HashSet<>();
         tId = UUID.randomUUID().toString();
@@ -78,6 +83,9 @@ public class Account extends AbstractAuditable {
         this.name = name;
     }
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
     public Set<Transaction> getTransactions() {
         return Collections.unmodifiableSet(transactions);
     }
@@ -88,6 +96,7 @@ public class Account extends AbstractAuditable {
 
     public void addTransaction(String description, BigDecimal amount) {
         transactions.add(new Transaction(this, amount, description));
+        balance = balance.add(amount);
     }
 
     public void addReconciledTransaction(Transaction transaction, Boolean reconciled, String note) {

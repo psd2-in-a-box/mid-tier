@@ -22,12 +22,13 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Resource
 @ApiModel(value = "AccountSparse",
-        description = "the Account kin a sparse projection")
+        description = "the Account as a sparse projection")
 
 public class AccountSparseRepresentation {
     private String regNo;
     private String accountNo;
     private String name;
+    private String balance;
 
     @Link("account:transactions")
     private HALLink transactionsResource;
@@ -43,6 +44,7 @@ public class AccountSparseRepresentation {
         this.regNo = account.getRegNo();
         this.accountNo = account.getAccountNo();
         this.name = account.getName();
+        this.balance = account.getBalance().toString();
         this.transactionsResource = new HALLink.Builder(uriInfo.getBaseUriBuilder()
             .path(TransactionServiceExposure.class)
             .build(account.getRegNo(), account.getAccountNo())).build();
@@ -78,6 +80,15 @@ public class AccountSparseRepresentation {
             value = "the human readable name of the account.")
     public String getName() {
         return name;
+    }
+
+    @ApiModelProperty(
+            access = "public",
+            name = "balance",
+            example = "1234.56",
+            value = "the balance of the account.")
+    public String getBalance() {
+        return balance;
     }
 
     @ApiModelProperty(

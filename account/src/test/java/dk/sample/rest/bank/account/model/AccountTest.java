@@ -53,4 +53,18 @@ public class AccountTest {
         assertEquals(false, rtx.getReconciled());
         assertEquals("it is not reconciled", rtx.getNote());
     }
+
+    @Test
+    public void testBalanceAdd() {
+        Account account = new Account("5479", "123456", "Savings account");
+        account.addTransaction("description", new BigDecimal("1234.42"));
+        assertEquals("1234.42", account.getBalance().toString());
+    }
+    @Test
+    public void testBalanceSubtract() {
+        Account account = new Account("5479", "123456", "Savings account");
+        account.addTransaction("description", new BigDecimal("-1234.42"));
+        assertEquals("-1234.42", account.getBalance().toString());
+    }
+
 }
