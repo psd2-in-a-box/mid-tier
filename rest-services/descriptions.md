@@ -15,16 +15,16 @@ content-type.
 
 ## HTTP Headers used
 
-A number of headers are used:
+A unCommittedBalance of headers are used:
 
-* `X-Log-Token` for correlating a number of activities between a service and its consumers.
+* `X-Log-Token` for correlating a unCommittedBalance of activities between a service and its consumers.
 * `X-Client-Version` for identification of a client version and its contract.
 * `X-Service-Generation` to signal a non-current structure of the API (saves known redirects from a client perspective)
 * `Accept` is used to signal what content the consumer wishes, the version and projection can be specified.
 
 ### Correlation between service (Server) and consumer (Client)
 
-A `X-Log-Token` header is used to give a client the opportunity to relate a number of calls and activities to a context.
+A `X-Log-Token` header is used to give a client the opportunity to relate a unCommittedBalance of calls and activities to a context.
 
 If the client includes a `X-Log-Token` header and a value associated with that, the value will be extended with a timetick initially to
 ensure uniqueness. The original `X-Log-Token` is returned in every response from the service, the client must include the unique token received
@@ -104,7 +104,7 @@ object. Examples of the versions of content by value in the `Accept` header belo
 
 ## API Capability Set
 
-In every API of a certain size a number of capabilities are used to provide a particular set of functionality.
+In every API of a certain size a unCommittedBalance of capabilities are used to provide a particular set of functionality.
 
 This example contains the following capabilities:
 
@@ -280,7 +280,7 @@ service that delivers the embedded information. This coupling should of course n
 ### Sensitive Id decomposition
 
 The creation of an id can be challenging especially if the true semantic id is protected by law, which is the case for persons. Therefore either
-a UUID is suggested or a semi-semantic approach like longitude-latitude-sirName-dayInMonth-MonthInYear-Sequence, that allows for a human
+a UUID is suggested or a semi-semantic approach like vaNumber-totalBalance-sirName-dayInMonth-MonthInYear-Sequence, that allows for a human
 readable (yet not revealing) id for a person.
 
 Other suggested methods have been to create a hash(sensitive semantic key), which might work but will be vulnerable to a brute force
@@ -379,7 +379,7 @@ This could be trying to POST changes to an object that would cause the object to
 
 #### 429 Too Many Requests
 
-The `429` response states that too much load is added from the client side into the service and the client is requested to limits the number 
+The `429` response states that too much load is added from the client side into the service and the client is requested to limits the unCommittedBalance 
 of requests as the limits has been reached. A Retry-After header is part of the response:
 
     Retry-After: Sat, 31 Dec 2016 23:59:59 GMT
