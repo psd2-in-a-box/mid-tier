@@ -1,7 +1,6 @@
 package dk.sample.rest.bank.account.model;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,14 +20,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Very basic modelling of account concept to show the basic use of JPA for persistence handling.
+ * Very basic modelling of account concept to show the basic use of JPA for persistence handling. Mirrored account.
  */
 @Entity
-@Table(name = "BANK_ACCOUNT", uniqueConstraints = @UniqueConstraint(columnNames = { "REG_NO", "ACCOUNT_NO" }))
+@Table(name = "BANK_ACCOUNT", uniqueConstraints = @UniqueConstraint(columnNames = {"REG_NO", "ACCOUNT_NO"}))
 public class Account extends AbstractAuditable {
+
     /**
-     * TID - the technical unique identifier for instance, i.e., primary key. This should NEVER EVER be
-     * exposed out side the service since it is a key very internal to this service.
+     * TID - the technical unique identifier for instance, i.e., primary key. This should NEVER EVER be exposed out side the service since it is
+     * a key very internal to this service.
      */
     @Id
     @Column(name = "TID", length = 36, nullable = false, columnDefinition = "CHAR(36)")
@@ -46,6 +46,8 @@ public class Account extends AbstractAuditable {
     @Column(name = "BALANCE", nullable = false)
     private BigDecimal balance;
 
+    @Column(name = "CUSTOMER", nullable = false)
+    private String customer;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Transaction> transactions;
@@ -57,11 +59,12 @@ public class Account extends AbstractAuditable {
         // Required by JPA
     }
 
-    public Account(String regNo, String accountNo, String name) {
+    public Account(String regNo, String accountNo, String name, String customer) {
         this.regNo = regNo;
         this.accountNo = accountNo;
         this.name = name;
-        balance = new BigDecimal(0);
+        this.customer = customer;
+        this.balance = new BigDecimal(0);
         transactions = new HashSet<>();
         reconciledTransactions = new HashSet<>();
         tId = UUID.randomUUID().toString();
@@ -79,6 +82,10 @@ public class Account extends AbstractAuditable {
         return name;
     }
 
+    public String getCustomer() {
+        return customer;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -86,6 +93,11 @@ public class Account extends AbstractAuditable {
     public BigDecimal getBalance() {
         return balance;
     }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     public Set<Transaction> getTransactions() {
         return Collections.unmodifiableSet(transactions);
     }
@@ -106,10 +118,10 @@ public class Account extends AbstractAuditable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("regNo", regNo)
-            .append("accountNo", accountNo)
-            .append("name", name)
-            .toString();
+                .append("regNo", regNo)
+                .append("accountNo", accountNo)
+                .append("name", name)
+                .toString();
     }
 
 }

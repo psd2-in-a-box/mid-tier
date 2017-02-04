@@ -24,6 +24,9 @@ public class AccountUpdateRepresentation {
     @Pattern(regexp = ".{1,40}")
     private String name;
 
+    @NotNull
+    private String customer;
+
     @ApiModelProperty(
             access = "public",
             name = "regno",
@@ -54,4 +57,9 @@ public class AccountUpdateRepresentation {
     public String getName() {
         return name;
     }
+
+    public String getCustomer() {
+        return customer;
+    }
+
 }

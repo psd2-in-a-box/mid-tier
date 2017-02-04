@@ -58,6 +58,7 @@ public class AccountServiceExposureIT {
     public void testListAccounts() {
         WebTarget target = ClientBuilder.newClient().register(JacksonJaxbJsonProvider.class).target("http://localhost:7001/sample");
         Map<String, Object> response = target.path("accounts")
+                .queryParam("customer", "1")
                 .request()
                 .accept("application/hal+json")
                 .header("X-Client-Version", "1.0.0")
@@ -117,6 +118,7 @@ public class AccountServiceExposureIT {
         accountCreate.put("regNo", "5479");
         accountCreate.put("accountNo", Integer.toString(accountNo));
         accountCreate.put("name", "Savings account");
+        accountCreate.put("customer", "cust-1");
         Map<String, Object> response = bankServices.path("accounts").path("5479-" + accountNo)
                 .request()
                 .accept("application/hal+json")
@@ -143,6 +145,7 @@ public class AccountServiceExposureIT {
         accountCreate.put("regNo", "5479");
         accountCreate.put("accountNo", "5555555");
         accountCreate.put("name", "Checking account");
+        accountCreate.put("customer", "cust-1");
         Response response = bankServices.path("accounts").path("5479-5555555")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .accept("application/hal+json")

@@ -11,7 +11,7 @@ public class AccountTest {
 
     @Test
     public void testAddTransaction() {
-        Account account = new Account("5479", "123456", "Savings account");
+        Account account = new Account("5479", "123456", "Savings account", "cust-1");
         account.addTransaction("description", new BigDecimal("1234.42"));
 
         assertEquals(1, account.getTransactions().size());
@@ -22,7 +22,7 @@ public class AccountTest {
 
     @Test
     public void testAddTransactionAndReconcile() {
-        Account account = new Account("5479", "123456", "Savings account");
+        Account account = new Account("5479", "123456", "Savings account", "cust-1");
         account.addTransaction("description", new BigDecimal("1234.42"));
 
         assertEquals(1, account.getTransactions().size());
@@ -39,7 +39,7 @@ public class AccountTest {
 
     @Test
     public void testAddTransactionAndNonReconciled() {
-        Account account = new Account("5479", "123456", "Savings account");
+        Account account = new Account("5479", "123456", "Savings account", "cust-1");
         account.addTransaction("description", new BigDecimal("1234.42"));
 
         assertEquals(1, account.getTransactions().size());
@@ -56,13 +56,13 @@ public class AccountTest {
 
     @Test
     public void testBalanceAdd() {
-        Account account = new Account("5479", "123456", "Savings account");
+        Account account = new Account("5479", "123456", "Savings account", "cust-1");
         account.addTransaction("description", new BigDecimal("1234.42"));
         assertEquals("1234.42", account.getBalance().toString());
     }
     @Test
     public void testBalanceSubtract() {
-        Account account = new Account("5479", "123456", "Savings account");
+        Account account = new Account("5479", "123456", "Savings account", "cust-1");
         account.addTransaction("description", new BigDecimal("-1234.42"));
         assertEquals("-1234.42", account.getBalance().toString());
     }
