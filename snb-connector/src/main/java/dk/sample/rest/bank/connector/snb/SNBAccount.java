@@ -1,7 +1,9 @@
 package dk.sample.rest.bank.connector.snb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import dk.nykredit.jackson.dataformat.hal.HALLink;
 import dk.nykredit.jackson.dataformat.hal.annotation.EmbeddedResource;
+import dk.nykredit.jackson.dataformat.hal.annotation.Link;
 import dk.nykredit.jackson.dataformat.hal.annotation.Resource;
 import java.math.BigDecimal;
 
@@ -16,6 +18,9 @@ public class SNBAccount {
     private BigDecimal balance;
     private Status accountStatus;
     private BigDecimal creditMax;
+    
+    @Link
+    private HALLink transactions;
     
     @EmbeddedResource
     private SNBCustomer owner;
@@ -34,6 +39,10 @@ public class SNBAccount {
 
     public BigDecimal getCreditMax() {
         return creditMax;
+    }
+
+    public HALLink getTransactions() {
+        return transactions;
     }
 
     public SNBCustomer getOwner() {

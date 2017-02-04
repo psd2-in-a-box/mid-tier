@@ -6,6 +6,7 @@ import dk.sample.rest.bank.account.model.Account;
 import dk.sample.rest.bank.account.persistence.AccountArchivist;
 import dk.sample.rest.bank.connector.snb.SNBAccount;
 import dk.sample.rest.bank.connector.snb.SNBAccounts;
+import dk.sample.rest.bank.connector.snb.SNBTransactions;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
@@ -24,6 +25,7 @@ import java.util.Base64;
 import java.util.Optional;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
+import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -40,7 +42,10 @@ public class SNBScheduler {
     @EJB
     private AccountArchivist archivist;
 
-    @Schedule(hour = "*", minute = "*/2", second = "0")
+    @EJB
+    private SNBScheduler self;
+
+    @Schedule(hour = "*", minute = "*/5", second = "0")
     public void doTimeout() {
         LOG.info("Running account poll");
         createRequest();
@@ -65,19 +70,30 @@ public class SNBScheduler {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
         SNBAccounts accounts = response.readEntity(SNBAccounts.class);
-        accounts.getAccounts().forEach(this::handleAccount);
+        accounts.getAccounts().forEach(account -> self.handleAccount(client, account));
         if (accounts.getNext() != null) {
             readAccounts(client, URI.create(accounts.getNext().getHref()));
         }
     }
 
-    private void handleAccount(SNBAccount account) {
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void handleAccount(Client client, SNBAccount account) {
         String reg = account.getAccountNumber().substring(0, 4);
         String konto = account.getAccountNumber().substring(4);
         Optional<Account> exists = archivist.findAccount(reg, konto);
         Account domainAccount = exists.orElse(new Account(reg, konto, String.format("%s-%s", reg, konto),
                 account.getOwner().getCustomerNumber()));
+
+        SNBTransactions transactions = client
+                .target(URI.create(account.getTransactions().getHref()))
+                .request()
+                .get(SNBTransactions.class);
+        transactions.getTransactions().forEach(transaction -> {
+            domainAccount.addTransaction(transaction.getId(), transaction.getText(), transaction.getAmount());
+        });
+
         domainAccount.setBalance(account.getBalance());
+
         archivist.save(domainAccount);
     }
 
