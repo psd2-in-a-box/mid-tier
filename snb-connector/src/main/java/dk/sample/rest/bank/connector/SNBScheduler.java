@@ -7,6 +7,7 @@ import dk.sample.rest.bank.account.model.Account;
 import dk.sample.rest.bank.account.persistence.AccountArchivist;
 import dk.sample.rest.bank.connector.snb.SNBAccount;
 import dk.sample.rest.bank.connector.snb.SNBAccounts;
+import dk.sample.rest.bank.connector.snb.SNBTransaction;
 import dk.sample.rest.bank.connector.snb.SNBTransactions;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -22,7 +23,11 @@ import javax.ws.rs.client.ClientRequestContext;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +45,7 @@ import javax.ws.rs.core.MediaType;
 public class SNBScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SNBScheduler.class);
+    private static final Pattern PAGE = Pattern.compile(".*page=(\\d+).*");
     private static final String USERNAME = "user099";
     private static final String PASSWORD = "TSuNHAWuHYwH";
 
@@ -49,7 +55,7 @@ public class SNBScheduler {
     @EJB
     private SNBScheduler self;
 
-    @Schedule(hour = "*", minute = "*/5", second = "0")
+    @Schedule(hour = "*", minute = "*/3", second = "0")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void doTimeout() {
         LOG.info("Running account poll");
@@ -75,7 +81,13 @@ public class SNBScheduler {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
         SNBAccounts accounts = response.readEntity(SNBAccounts.class);
-        accounts.getAccounts().forEach(account -> self.handleAccount(client, account));
+        accounts.getAccounts().forEach(account -> {
+            try {
+                self.handleAccount(client, account);
+            } catch (RuntimeException e) {
+                LOG.warn("Failed to handle transactions for {}", account.getAccountNumber());
+            }
+        });
         if (accounts.getNext() != null) {
             readAccounts(client, URI.create(accounts.getNext().getHref()));
         }
@@ -94,7 +106,7 @@ public class SNBScheduler {
         domainAccount.setBalance(account.getBalance());
 
         if (txCount != domainAccount.getTransactions().size()) {
-            LOG.info("Added {} new transactions to {}", domainAccount.getTransactions().size() - txCount, domainAccount);
+            LOG.info("Added {} new transactions to {}", domainAccount.getTransactions().size() - txCount, domainAccount);
         }
 
         archivist.save(domainAccount);
@@ -105,48 +117,32 @@ public class SNBScheduler {
                 .target(uri)
                 .request()
                 .get(SNBTransactions.class);
-        TransactionsStatus next = new TransactionsStatus(transactions.getNext());
-        transactions.getTransactions().forEach(transaction -> {
-            if (!account.addTransaction(transaction.getId(), transaction.getText(), transaction.getAmount())) {
-                next.stop();
+        List<SNBTransaction> transactionList = new ArrayList<>(transactions.getTransactions());
+
+        if (!transactionList.isEmpty()
+                && transactionList.get(0).getTransactionDateTimestamp() > account.getLatest().toEpochMilli()) {
+            next(transactions.getNext()).ifPresent(nextUri -> handleTransactions(client, account, nextUri));
+        }
+
+        Collections.reverse(transactionList);
+        transactionList.forEach(transaction -> {
+            if (transaction.getTransactionDateTimestamp() > account.getLatest().toEpochMilli()) {
+                account.addTransaction(transaction.getId(), transaction.getText(), transaction.getAmount(),
+                        Instant.ofEpochMilli(transaction.getTransactionDateTimestamp()));
             }
         });
-        next.getNext().ifPresent(nextUri -> handleTransactions(client, account, nextUri));
     }
 
-    /**
-     * Handle if more transactions should be read.
-     */
-    static class TransactionsStatus {
-
-        private static final Pattern PAGE = Pattern.compile("page=(\\d+)");
-
-        private final URI next;
-        private Boolean proceed = true;
-
-        public TransactionsStatus(HALLink next) {
-            URI nextURI = null;
-            if (next != null) {
-                nextURI = URI.create(next.getHref());
-                Matcher m = PAGE.matcher(nextURI.getQuery());
-                if (!m.matches() || Integer.parseInt(m.group(1)) > 2) {
-                    nextURI = null;
-                }
-            }
-            this.next = nextURI;
-        }
-
-        public void stop() {
-            proceed = false;
-        }
-
-        public Optional<URI> getNext() {
-            if (proceed) {
-                return Optional.ofNullable(next);
-            } else {
-                return Optional.empty();
+    private Optional<URI> next(HALLink next) {
+        URI nextURI = null;
+        if (next != null) {
+            nextURI = URI.create(next.getHref());
+            Matcher m = PAGE.matcher(nextURI.getQuery());
+            if (!m.matches() || Integer.parseInt(m.group(1)) > 2) {
+                nextURI = null;
             }
         }
+        return Optional.ofNullable(nextURI);
     }
 
     /**

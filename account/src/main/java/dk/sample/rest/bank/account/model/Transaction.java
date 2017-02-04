@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import dk.sample.rest.common.persistence.jpa.AbstractAuditable;
+import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -53,15 +54,19 @@ public class Transaction extends AbstractAuditable {
     @Column(name = "DESCRIPTION", length = 500, nullable = false)
     private String description;
 
+    @Column(name = "TIMESTAMP")
+    private Instant timestamp;
+
     protected Transaction() {
         // Required by JPA
     }
 
-    public Transaction(Account account, String id, BigDecimal amount, String description) {
+    public Transaction(Account account, String id, BigDecimal amount, String description, Instant timestamp) {
         this.account = account;
         this.id = id;
         this.amount = amount;
         this.description = description;
+        this.timestamp = timestamp;
         tId = UUID.randomUUID().toString();
 
     }
@@ -69,7 +74,7 @@ public class Transaction extends AbstractAuditable {
     public Transaction(Account account, BigDecimal amount, String description) {
         // The semantic key might as well be generated as a hash value of the transaction values
         // for simplicity it is just a unique id here.
-        this(account, UUID.randomUUID().toString(), amount, description);
+        this(account, UUID.randomUUID().toString(), amount, description, Instant.now());
     }
 
     /**
@@ -96,6 +101,10 @@ public class Transaction extends AbstractAuditable {
         return description;
     }
 
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
     @Override
     protected String[] excludedFields() {
         return EXCLUDED_FIELDS;
@@ -108,6 +117,7 @@ public class Transaction extends AbstractAuditable {
                 .append("id", id)
                 .append("amount", amount)
                 .append("description", description)
+                .append("timestamp", timestamp)
                 .toString();
     }
 

@@ -12,6 +12,7 @@ public class SNBTransaction {
     private String id;
     private BigDecimal amount;
     private String text;
+    private long transactionDateTimestamp;
 
     public String getId() {
         return id;
@@ -23,6 +24,10 @@ public class SNBTransaction {
 
     public String getText() {
         return text;
+    }
+
+    public long getTransactionDateTimestamp() {
+        return transactionDateTimestamp;
     }
 
 }
