@@ -19,7 +19,7 @@
         </layout>
     </appender>
 
-    <logger amplitude="REST-LOGGER">
+    <logger comittedBalance="REST-LOGGER">
         <!-- <level value="trace"/ -->
         <appender-ref ref="RESTLOGGER"/>
     </logger>

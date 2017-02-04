@@ -13,7 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Very basic modelling of customer concept to show the basic use of JPA for persistence handling.
+ * Very basic modelling of location concept to show the basic use of JPA for persistence handling.
  */
 @Entity
 @Table(name = "LOCATION", uniqueConstraints = @UniqueConstraint(columnNames = { "LONGITUDE", "LATITUDE" }))

@@ -334,6 +334,9 @@
                             <file>
                                 <file>${project.basedir}/src/test/h2-data/location.h2.db</file>
                             </file>
+                            <file>
+                                <file>${project.basedir}/src/test/h2-data/virtualaccount.h2.db</file>
+                            </file>
                         </files>
                     </configuration>
 
@@ -458,6 +461,17 @@
                                         cargo.datasource.properties=|
                                         cargo.datasource.transactionsupport=XA_TRANSACTION
                                     </cargo.datasource.datasource.location>
+                                    <cargo.datasource.datasource.virtualaccount>
+                                        cargo.datasource.id=VirtualAccount|
+                                        cargo.datasource.jndi=VirtualAccount|
+                                        cargo.datasource.driver=org.h2.jdbcx.JdbcDataSource|
+                                        cargo.datasource.type=javax.sql.XADataSource|
+                                        cargo.datasource.url=jdbc:h2:file:./location;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE|
+                                        cargo.datasource.username=sa|
+                                        cargo.datasource.password=sa|
+                                        cargo.datasource.properties=|
+                                        cargo.datasource.transactionsupport=XA_TRANSACTION
+                                    </cargo.datasource.datasource.virtualaccount>
                                 </properties>
                             </configuration>
                         </configuration>
@@ -472,6 +486,7 @@
         <module>account</module>
         <module>customer</module>
         <module>location</module>
+        <module>virtual-account</module>
         <module>common</module>
         <module>snb-connector</module>
     </modules>
