@@ -26,6 +26,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Table(name = "BANK_ACCOUNT", uniqueConstraints = @UniqueConstraint(columnNames = {"REG_NO", "ACCOUNT_NO"}))
 public class Account extends AbstractAuditable {
 
+    private static final String[] EXCLUDED_FIELDS = new String[]{"tId", "lastModifiedBy", "lastModifiedTime", "transactions",
+        "reconciledTransactions"};
+
     /**
      * TID - the technical unique identifier for instance, i.e., primary key. This should NEVER EVER be exposed out side the service since it is
      * a key very internal to this service.
@@ -106,12 +109,14 @@ public class Account extends AbstractAuditable {
         return Collections.unmodifiableSet(reconciledTransactions);
     }
 
-    public void addTransaction(String id, String description, BigDecimal amount) {
+    public boolean addTransaction(String id, String description, BigDecimal amount) {
         Transaction transaction = new Transaction(this, id, amount, description);
         if (!transactions.contains(transaction)) {
             transactions.add(transaction);
             balance = balance.add(amount);
+            return true;
         }
+        return false;
     }
 
     public void addTransaction(String description, BigDecimal amount) {
@@ -121,6 +126,11 @@ public class Account extends AbstractAuditable {
 
     public void addReconciledTransaction(Transaction transaction, Boolean reconciled, String note) {
         reconciledTransactions.add(new ReconciledTransaction(reconciled, note, transaction));
+    }
+
+    @Override
+    protected String[] excludedFields() {
+        return EXCLUDED_FIELDS;
     }
 
     @Override
