@@ -468,5 +468,6 @@
         <module>customer</module>
         <module>location</module>
         <module>common</module>
+        <module>snb-connector</module>
     </modules>
 </project>
