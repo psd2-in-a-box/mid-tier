@@ -19,15 +19,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * Very basic modelling of an transaction concept to show the relation to account handled by JPA.
  */
 @Entity
-@Table(name = "BANK_TRANSACTION", uniqueConstraints = @UniqueConstraint(columnNames = { "FK_ACCOUNT_TID", "SID" }))
+@Table(name = "BANK_TRANSACTION", uniqueConstraints = @UniqueConstraint(columnNames = {"FK_ACCOUNT_TID", "SID"}))
 public class Transaction extends AbstractAuditable {
+
     private static final String[] EXCLUDED_FIELDS = new String[]{
         "tId", "account", "lastModifiedBy", "lastModifiedTime"
     };
 
     /**
-     * TID - the technical unique identifier for instance, i.e., primary key. This should NEVER EVER be
-     * exposed out side the service since it is a key very internal to this service.
+     * TID - the technical unique identifier for instance, i.e., primary key. This should NEVER EVER be exposed out side the service since it is
+     * a key very internal to this service.
      */
     @Id
     @Column(name = "TID", length = 36, nullable = false, columnDefinition = "CHAR(36)")
@@ -56,14 +57,19 @@ public class Transaction extends AbstractAuditable {
         // Required by JPA
     }
 
-    public Transaction(Account account, BigDecimal amount, String description) {
+    public Transaction(Account account, String id, BigDecimal amount, String description) {
         this.account = account;
+        this.id = id;
         this.amount = amount;
         this.description = description;
         tId = UUID.randomUUID().toString();
+
+    }
+
+    public Transaction(Account account, BigDecimal amount, String description) {
         // The semantic key might as well be generated as a hash value of the transaction values
         // for simplicity it is just a unique id here.
-        id = UUID.randomUUID().toString();
+        this(account, UUID.randomUUID().toString(), amount, description);
     }
 
     /**
@@ -98,11 +104,11 @@ public class Transaction extends AbstractAuditable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("account", account)
-            .append("id", id)
-            .append("amount", amount)
-            .append("description", description)
-            .toString();
+                .append("account", account)
+                .append("id", id)
+                .append("amount", amount)
+                .append("description", description)
+                .toString();
     }
 
 }

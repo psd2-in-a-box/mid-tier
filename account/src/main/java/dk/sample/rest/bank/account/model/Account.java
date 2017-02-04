@@ -106,6 +106,14 @@ public class Account extends AbstractAuditable {
         return Collections.unmodifiableSet(reconciledTransactions);
     }
 
+    public void addTransaction(String id, String description, BigDecimal amount) {
+        Transaction transaction = new Transaction(this, id, amount, description);
+        if (!transactions.contains(transaction)) {
+            transactions.add(transaction);
+            balance = balance.add(amount);
+        }
+    }
+
     public void addTransaction(String description, BigDecimal amount) {
         transactions.add(new Transaction(this, amount, description));
         balance = balance.add(amount);
