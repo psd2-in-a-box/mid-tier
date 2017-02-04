@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CustomerServiceExposureTest {
 
     @Mock
@@ -137,7 +137,6 @@ public class CustomerServiceExposureTest {
         UriInfo ui = mock(UriInfo.class);
 
         CustomerUpdateRepresentation customerUpdate = mock(CustomerUpdateRepresentation.class);
-        when(customerUpdate.getFirstName()).thenReturn("Hans");
 
         service.createOrUpdate(ui, request, "1234567890", customerUpdate);
         fail("Should have thrown exception before this step");

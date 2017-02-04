@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class EventServiceExposureTest {
 
     @Mock
@@ -39,12 +39,6 @@ public class EventServiceExposureTest {
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
         Request request = mock(Request.class);
-
-        Event event = mock(Event.class);
-        when(event.getId()).thenReturn("mockedID");
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("/account-events/5479-123456/eventSID"));
-        when(event.getSequence()).thenReturn(1234567L);
 
         List<Event> eventList = new ArrayList<>(3);
         eventList.add(new Event(new URI("accounts/5479-123456/users"),
@@ -99,11 +93,6 @@ public class EventServiceExposureTest {
 
         Request request = mock(Request.class);
 
-        Event event = mock(Event.class);
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("account-events/5479-123456/eventSID"));
-        when(event.getSequence()).thenReturn(1234567L);
-
         when(archivist.getEventsForCategory(Event.getCategory("5479", "123456"), Optional.empty()))
                 .thenReturn(Collections.singletonList(new Event(new URI("account-events/5479-1234567/eventSID"),
                         "5479-123456", CurrentTime.now())));
@@ -124,12 +113,6 @@ public class EventServiceExposureTest {
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
         Request request = mock(Request.class);
-
-        Event event = mock(Event.class);
-        when(event.getId()).thenReturn("eventSID");
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("accounts/5479-123456/transactions/txSID"));
-        when(event.getSequence()).thenReturn(1234567L);
 
         when(archivist.getEvent("5479-123456","eventSID"))
                 .thenReturn(new Event(new URI("accounts/5479-1234567/transactions/txSID")));

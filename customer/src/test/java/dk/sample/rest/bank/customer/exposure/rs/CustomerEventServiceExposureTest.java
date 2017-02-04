@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CustomerEventServiceExposureTest {
 
     @Mock
@@ -39,12 +39,6 @@ public class CustomerEventServiceExposureTest {
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
         Request request = mock(Request.class);
-
-        Event event = mock(Event.class);
-        when(event.getId()).thenReturn("mockedID");
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("/customer-events/1234567890/eventSID"));
-        when(event.getSequence()).thenReturn(1234567L);
 
         List<Event> eventList = new ArrayList<>(3);
         eventList.add(new Event(new URI("customers/default/eventSID"),
@@ -99,11 +93,6 @@ public class CustomerEventServiceExposureTest {
 
         Request request = mock(Request.class);
 
-        Event event = mock(Event.class);
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("customers-events/some-category/eventSID"));
-        when(event.getSequence()).thenReturn(1234567L);
-
         when(archivist.getEventsForCategory(Event.getCategory("some", "category"), Optional.empty()))
                 .thenReturn(Collections.singletonList(new Event(new URI("customer-events/some-category/eventSID"),
                         "some-category", CurrentTime.now())));
@@ -124,12 +113,6 @@ public class CustomerEventServiceExposureTest {
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
         Request request = mock(Request.class);
-
-        Event event = mock(Event.class);
-        when(event.getId()).thenReturn("eventSID");
-        when(event.getInformation()).thenReturn("event information");
-        when(event.getOrigin()).thenReturn(new URI("customers/1010101010/cards"));
-        when(event.getSequence()).thenReturn(1234567L);
 
         when(archivist.getEvent("new-card","eventSID"))
                 .thenReturn(new Event(new URI("customers/1010101010/cards")));
