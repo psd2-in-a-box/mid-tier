@@ -16,6 +16,7 @@
         <properties>
             <property name="hibernate.transaction.jta.platform" value="dk.sample.rest.common.persistence.vendor.hibernate.JtaPlatform"/>
             <property name="hibernate.dialect_resolvers" value="dk.sample.rest.common.persistence.vendor.hibernate.DB2DialectResolver"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
 

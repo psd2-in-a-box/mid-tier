@@ -51,6 +51,8 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +106,8 @@ public class AccountServiceExposure {
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
         })
-    public Response list(@Context UriInfo uriInfo, @Context Request request, @HeaderParam("Accept") String accept) {
-        return accountsProducers.getOrDefault(accept, this::handleUnsupportedContentType).getResponse(uriInfo, request);
+    public Response list(@Context UriInfo uriInfo, @Context Request request, @QueryParam("customer") @DefaultValue("0") String customer, @HeaderParam("Accept") String accept) {
+        return accountsProducers.getOrDefault(accept, this::handleUnsupportedContentType).getResponse(uriInfo, request, customer);
     }
 
     @GET
@@ -187,7 +189,7 @@ public class AccountServiceExposure {
             a = acc.get();
             a.setName(account.getName());
         } else {
-            a = new Account(regNo, accountNo, account.getName());
+            a = new Account(regNo, accountNo, account.getName(), account.getCustomer());
         }
         archivist.save(a);
 
@@ -203,8 +205,8 @@ public class AccountServiceExposure {
                 .build();
     }
 
-    Response listServiceGeneration1Version1(UriInfo uriInfo, Request request) {
-        List<Account> accounts = archivist.listAccounts();
+    Response listServiceGeneration1Version1(UriInfo uriInfo, Request request, @QueryParam("customer") @DefaultValue("0") String customer) {
+        List<Account> accounts = archivist.listAccounts(customer);
         return new EntityResponseBuilder<>(accounts, list -> new AccountsRepresentation(list, uriInfo))
                 .name("accountoverview")
                 .version("1")
@@ -235,7 +237,7 @@ public class AccountServiceExposure {
     }
 
     interface AccountsProducerMethod {
-        Response getResponse(UriInfo uriInfo, Request request);
+        Response getResponse(UriInfo uriInfo, Request request, String customer);
     }
 
     interface AccountProducerMethod {

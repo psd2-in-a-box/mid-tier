@@ -43,16 +43,17 @@ public class AccountServiceExposureTest {
         UriInfo ui = mock(UriInfo.class);
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
-        when(archivist.listAccounts())
-            .thenReturn(Arrays.asList(new Account("5479", "1", "Checking account"), new Account("5479", "2", "Savings account")));
+        when(archivist.listAccounts("0"))
+            .thenReturn(Arrays.asList(new Account("5479", "1", "Checking account", "cust-1"),
+                    new Account("5479", "2", "Savings account", "cust-1")));
 
-        Response response = service.list(ui, request, "application/hal+json");
+        Response response = service.list(ui, request, "0", "application/hal+json");
         AccountsRepresentation accounts = (AccountsRepresentation) response.getEntity();
 
         assertEquals(2, accounts.getAccounts().size());
         assertEquals("http://mock/accounts", accounts.getSelf().getHref());
 
-        response = service.list(ui, request, "application/hal+json;concept=non.existing;type");
+        response = service.list(ui, request, "0", "application/hal+json;concept=non.existing;type");
         assertEquals(415,response.getStatus());
 
     }
@@ -64,7 +65,7 @@ public class AccountServiceExposureTest {
         UriInfo ui = mock(UriInfo.class);
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
 
-        when(archivist.getAccount("5479", "1234")).thenReturn(new Account("5479", "1234", "Savings account"));
+        when(archivist.getAccount("5479", "1234")).thenReturn(new Account("5479", "1234", "Savings account", "cust-1"));
 
         AccountRepresentation account = (AccountRepresentation) service.get(ui, request, "5479", "1234", "application/hal+json").getEntity();
 
@@ -88,6 +89,7 @@ public class AccountServiceExposureTest {
         when(accountUpdate.getName()).thenReturn("new Account");
         when(accountUpdate.getRegNo()).thenReturn("5479");
         when(accountUpdate.getAccountNo()).thenReturn("12345678");
+        when(accountUpdate.getCustomer()).thenReturn("cust-1");
 
         when(archivist.findAccount("5479", "12345678")).thenReturn(Optional.empty());
 
@@ -106,7 +108,7 @@ public class AccountServiceExposureTest {
         when(ui.getBaseUriBuilder()).then(new UriBuilderFactory(URI.create("http://mock")));
         when(ui.getPath()).thenReturn("http://mock");
 
-        Account existingAcc = new Account("5479", "12345678", "Savings account");
+        Account existingAcc = new Account("5479", "12345678", "Savings account", "cust-1");
         when(archivist.findAccount("5479", "12345678")).thenReturn(Optional.of(existingAcc));
 
         AccountUpdateRepresentation accountUpdate = mock(AccountUpdateRepresentation.class);

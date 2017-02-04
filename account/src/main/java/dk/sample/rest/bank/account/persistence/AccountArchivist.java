@@ -36,8 +36,9 @@ public class AccountArchivist {
     private EntityManager em;
 
     @LogDuration(limit = 50)
-    public List<Account> listAccounts() {
-        TypedQuery<Account> q = em.createQuery("select a from Account a", Account.class);
+    public List<Account> listAccounts(String customer) {
+        TypedQuery<Account> q = em.createQuery("select a from Account a where a.customer=:customer", Account.class);
+        q.setParameter("customer", customer);
         return q.getResultList();
     }
 
