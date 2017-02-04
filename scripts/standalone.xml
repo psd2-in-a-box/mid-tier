@@ -142,7 +142,7 @@
             <datasources>
                 <xa-datasource jndi-name="java:/Account" pool-name="Account" enabled="true" use-java-context="true">
                     <driver>h2</driver>
-                    <xa-datasource-property name="URL">jdbc:h2:file:account;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</xa-datasource-property>
+                    <xa-datasource-property name="URL">jdbc:h2:mem:account;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</xa-datasource-property>
                     <xa-pool>
                         <min-pool-size>2</min-pool-size>
                         <max-pool-size>10</max-pool-size>
