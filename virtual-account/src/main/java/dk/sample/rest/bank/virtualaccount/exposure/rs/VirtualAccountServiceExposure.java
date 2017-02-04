@@ -72,7 +72,7 @@ public class VirtualAccountServiceExposure {
 
     public VirtualAccountServiceExposure() {
         accountsProducer.put("application/hal+json", this::listServiceGeneration1Version1);
-        accountsProducer.put("application/hal+json;concept=locations;v=1", this::listServiceGeneration1Version1);
+        accountsProducer.put("application/hal+json;concept=virtualaccounts;v=1", this::listServiceGeneration1Version1);
 
         accountProducers.put("application/hal+json", this::getServiceGeneration1Version2);
         accountProducers.put("application/hal+json;concept=virtualaccount;v=1", this::getServiceGeneration1Version1);
