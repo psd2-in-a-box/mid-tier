@@ -65,12 +65,12 @@ public class CustomerEventFeedMetadataServiceExposure {
                     "feed for the customer service",
             tags = {"events"},
             produces = "application/hal+json,  application/hal+json;concept=metadata;v=1",
-            nickname = "getMetadata"
+            nickname = "getCustomerMetadata"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
         })
-    public Response getMetadata(@Context UriInfo uriInfo, @Context Request request, @HeaderParam("Accept") String accept) {
+    public Response getCustomerServiceMetadata(@Context UriInfo uriInfo, @Context Request request, @HeaderParam("Accept") String accept) {
         return eventMetadataProducers.getOrDefault(accept, this::handleUnsupportedContentType).getResponse(uriInfo, request);
     }
 

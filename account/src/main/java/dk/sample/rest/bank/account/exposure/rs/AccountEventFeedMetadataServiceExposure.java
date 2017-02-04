@@ -65,7 +65,7 @@ public class AccountEventFeedMetadataServiceExposure {
                     "feed for the account service",
             tags = {"events"},
             produces = "application/hal+json,  application/hal+json;concept=metadata;v=1",
-            nickname = "getMetadata"
+            nickname = "getAccountMetadata"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")

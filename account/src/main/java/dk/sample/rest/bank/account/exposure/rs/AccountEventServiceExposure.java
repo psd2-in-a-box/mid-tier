@@ -79,7 +79,7 @@ public class AccountEventServiceExposure {
             },
             tags = {"interval", "events"},
             produces = "application/hal+json,  application/hal+json;concept=events;v=1",
-            nickname = "listAllEvents"
+            nickname = "listAccountAllEvents"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
@@ -107,7 +107,7 @@ public class AccountEventServiceExposure {
             },
             tags = {"interval", "events"},
             produces = "application/hal+json,  application/hal+json;concept=eventcategory;v=1",
-            nickname = "getEventsByCategory"
+            nickname = "getAccountEventsByCategory"
         )
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
@@ -135,7 +135,7 @@ public class AccountEventServiceExposure {
             },
             tags = {"immutable", "events"},
             produces = "application/hal+json,  application/hal+json;concept=event;v=1",
-            nickname = "getEvent")
+            nickname = "getAccountEvent")
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "No event found."),
             @ApiResponse(code = 415, message = "Content type not supported.")
