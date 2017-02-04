@@ -91,10 +91,10 @@ public class VirtualAccountServiceExposure {
             },
             extensions = {@Extension(name = "roles", properties = {
                     @ExtensionProperty(name = "advisor", value = "advisors are allowed getting every virtualaccount"),
-                    @ExtensionProperty(name = "customer", value = "customer only allowed getting own locations")}
+                    @ExtensionProperty(name = "customer", value = "customer only allowed getting own accounts")}
             )},
-            produces = "application/hal+json, application/hal+json;concept=locations;v=1",
-            notes = "List all locations in a default projection, which is VirtualAccount version 1" +
+            produces = "application/hal+json, application/hal+json;concept=virtualaccount;v=1",
+            notes = "List all accounts in a default projection, which is VirtualAccount version 1" +
                     "Supported projections and versions are: " +
                     "VirtualAccounts in version 1 " +
                     "The Accept header for the default version is application/hal+json;concept=virtualaccount;v=1.0.0.... " +
@@ -208,8 +208,8 @@ public class VirtualAccountServiceExposure {
     }
 
     Response listServiceGeneration1Version1(UriInfo uriInfo, Request request) {
-        List<VirtualAccount> locations = archivist.listAccounts();
-        return new EntityResponseBuilder<>(locations, list -> new VirtualAccountsRepresentation(list, uriInfo))
+        List<VirtualAccount> accounts = archivist.listAccounts();
+        return new EntityResponseBuilder<>(accounts, list -> new VirtualAccountsRepresentation(list, uriInfo))
                 .name("virtualaccount")
                 .version("1")
                 .maxAge(10)
