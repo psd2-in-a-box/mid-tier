@@ -6,5 +6,13 @@ package dk.sample.rest.bank.connector.snb;
  * @author borup
  */
 public class SNBAccount {
-	// TODO
+	String accountNumber; 
+  	double balance;
+  	//coowners
+  	String accountStatus;
+  	double creditMax;
+
+	public String toString() {
+		return "Number: " + accountNumber + " balance: " + balance + " status: " + accountStatus + " credit: " + creditMax;
+	}
 }
