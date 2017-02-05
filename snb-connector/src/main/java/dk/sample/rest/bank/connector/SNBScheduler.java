@@ -55,7 +55,7 @@ public class SNBScheduler {
     @EJB
     private SNBScheduler self;
 
-    @Schedule(hour = "*", minute = "*/3", second = "0")
+    @Schedule(hour = "*", minute = "*/1", second = "0")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void doTimeout() {
         LOG.info("Running account poll");
