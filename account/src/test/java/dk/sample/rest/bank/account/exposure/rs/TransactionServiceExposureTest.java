@@ -19,6 +19,7 @@ import dk.sample.rest.bank.account.model.Account;
 import dk.sample.rest.bank.account.model.Transaction;
 import dk.sample.rest.bank.account.persistence.AccountArchivist;
 import dk.sample.rest.common.test.rs.UriBuilderFactory;
+import java.time.Instant;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,12 +47,15 @@ public class TransactionServiceExposureTest {
         when(account.getAccountNo()).thenReturn("123456");
         List<Sort> sort = Collections.emptyList();
         when(archivist.getTransactions("5479", "123456", Optional.empty(), Optional.empty(), sort)).thenReturn(
-                Collections.singletonList(new Transaction(account, new BigDecimal("1234.42"), "description")));
+                Arrays.asList(
+                        new Transaction(account, "id-1", new BigDecimal("1234.42"), "description 1", Instant.ofEpochMilli(1)),
+                        new Transaction(account, "id-2", new BigDecimal("2345.42"), "description 2", Instant.ofEpochMilli(2))
+                ));
 
         Response response = service.list(ui, request, "application/hal+json","5479", "123456", "", "", "");
         TransactionsRepresentation transactions = (TransactionsRepresentation) response.getEntity();
 
-        assertEquals(1, transactions.getTransactions().size());
+        assertEquals(2, transactions.getTransactions().size());
         assertEquals("http://mock/accounts/5479-123456/transactions", transactions.getSelf().getHref());
 
         response = service.list(ui, request, "application/hal+json;concept=non.existing;type","5479", "123456",

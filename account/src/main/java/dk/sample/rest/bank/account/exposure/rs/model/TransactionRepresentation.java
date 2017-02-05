@@ -18,11 +18,12 @@ import io.swagger.annotations.ApiModelProperty;
 @Resource
 @ApiModel(value = "Transaction",
         description = "An classical domain immutable transaction")
-
 public class TransactionRepresentation {
+
     private String id;
     private String description;
     private String amount;
+    private long timestamp;
 
     @Link
     private HALLink self;
@@ -31,11 +32,12 @@ public class TransactionRepresentation {
         this.id = transaction.getId();
         this.description = transaction.getDescription();
         this.amount = transaction.getAmount().toPlainString();
+        this.timestamp = transaction.getTimestamp().toEpochMilli();
         this.self = new HALLink.Builder(uriInfo.getBaseUriBuilder()
-            .path(TransactionServiceExposure.class)
-            .path(TransactionServiceExposure.class, "get")
-            .build(transaction.getAccount().getRegNo(), transaction.getAccount().getAccountNo(), transaction.getId()))
-            .build();
+                .path(TransactionServiceExposure.class)
+                .path(TransactionServiceExposure.class, "get")
+                .build(transaction.getAccount().getRegNo(), transaction.getAccount().getAccountNo(), transaction.getId()))
+                .build();
     }
 
     @ApiModelProperty(
@@ -62,6 +64,11 @@ public class TransactionRepresentation {
             value = "the amount - in this example without currency.")
     public String getAmount() {
         return amount;
+    }
+
+    @ApiModelProperty(access = "public", name = "timestamp", value = "Time on which the transaction occurred")
+    public long getTimestamp() {
+        return timestamp;
     }
 
     @ApiModelProperty(
