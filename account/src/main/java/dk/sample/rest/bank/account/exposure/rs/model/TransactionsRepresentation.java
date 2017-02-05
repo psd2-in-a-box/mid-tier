@@ -37,6 +37,7 @@ public class TransactionsRepresentation {
     public TransactionsRepresentation(Account account, UriInfo uriInfo) {
         transactions = new ArrayList<>();
         transactions.addAll(account.getTransactions().stream()
+                .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
                 .map(transaction -> new TransactionRepresentation(transaction, uriInfo))
                 .collect(Collectors.toList()));
         this.self = new HALLink.Builder(uriInfo.getBaseUriBuilder()
@@ -48,6 +49,7 @@ public class TransactionsRepresentation {
     public TransactionsRepresentation(String regNo, String accountNo, List<Transaction> txs, UriInfo uriInfo) {
         transactions = new ArrayList<>();
         transactions.addAll(txs.stream()
+                .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
                 .map(tx -> new TransactionRepresentation(tx, uriInfo))
                 .collect(Collectors.toList()));
         this.self = new HALLink.Builder(uriInfo.getBaseUriBuilder()
