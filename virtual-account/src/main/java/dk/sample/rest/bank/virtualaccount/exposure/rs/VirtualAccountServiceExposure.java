@@ -74,9 +74,8 @@ public class VirtualAccountServiceExposure {
         accountsProducer.put("application/hal+json", this::listServiceGeneration1Version1);
         accountsProducer.put("application/hal+json;concept=virtualaccounts;v=1", this::listServiceGeneration1Version1);
 
-        accountProducers.put("application/hal+json", this::getServiceGeneration1Version2);
+        accountProducers.put("application/hal+json", this::getServiceGeneration1Version1);
         accountProducers.put("application/hal+json;concept=virtualaccount;v=1", this::getServiceGeneration1Version1);
-        accountProducers.put("application/hal+json;concept=virtualaccount;v=2", this::getServiceGeneration1Version2);
     }
 
     @GET
@@ -97,7 +96,7 @@ public class VirtualAccountServiceExposure {
             notes = "List all accounts in a default projection, which is VirtualAccount version 1" +
                     "Supported projections and versions are: " +
                     "VirtualAccounts in version 1 " +
-                    "The Accept header for the default version is application/hal+json;concept=virtualaccount;v=1.0.0.... " +
+                    "The Accept header for the default version is application/hal+json;concept=virtualaccount;v=1.... " +
                     "The format for the default version is {....}", nickname = "listVirtualAccounts")
     @ApiResponses(value = {
             @ApiResponse(code = 415, message = "Content type not supported.")
@@ -108,7 +107,7 @@ public class VirtualAccountServiceExposure {
 
     @GET
     @Path("{virtualAccountNumber}")
-    @Produces({"application/hal+json", "application/hal+json;concept=virtualaccount;v=1", "application/hal+json;concept=virtualaccount;v=2"})
+    @Produces({"application/hal+json", "application/hal+json;concept=virtualaccount;v=1"})
     @ApiOperation(value = "gets the information from a single position", response = VirtualAccountRepresentation.class,
             authorizations = {
                     @Authorization(value = "oauth2", scopes = {}),
@@ -124,7 +123,7 @@ public class VirtualAccountServiceExposure {
             produces = "application/hal+json, application/hal+json;concept=virtualaccount;v=1, application/hal+json;concept=virtualaccount;v=2",
             notes = "obtain a single customer back in a default projection, which is VirtualAccount version 2" +
                     " Supported projections and versions are:" +
-                    " VirtualAccount in version1 and VirtualAccount in version 2" +
+                    " VirtualAccount in version1 and VirtualAccount in version 1" +
                     " The format of the default version is .... - The Accept Header is not marked as required in the " +
                     "swagger - but it is needed - we are working on a solution to that", nickname = "getVirtualAccount")
     @ApiResponses(value = {
@@ -203,7 +202,7 @@ public class VirtualAccountServiceExposure {
                 .entity(new VirtualAccountRepresentation(ac, uriInfo))
                 .cacheControl(cc).expires(Date.from(CurrentTime.now().plusSeconds(maxAge)))
                 .status(201)
-                .type("application/hal+json;concept=virtualaccount;v=2")
+                .type("application/hal+json;concept=virtualaccount;v=1")
                 .build();
     }
 
@@ -230,23 +229,6 @@ public class VirtualAccountServiceExposure {
                 .name("virtualaccount")
                 .version("1")
                 .maxAge(120)
-                .build(request);
-    }
-
-    @LogDuration(limit = 50)
-    Response getServiceGeneration1Version2(UriInfo uriInfo, Request request, String accountNo) {
-        Long no;
-        try {
-          no = Long.parseLong(accountNo);
-        } catch (NumberFormatException e) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-        VirtualAccount virtualaccount = archivist.getAccount(no);
-        LOGGER.info("Usage - application/hal+json;concept=virtualaccount;v=2 - virtualaccount = " + virtualaccount);
-        return new EntityResponseBuilder<>(virtualaccount, ac -> new VirtualAccountRepresentation(ac, uriInfo))
-                .name("virtualaccount")
-                .version("2")
-                .maxAge(60)
                 .build(request);
     }
 

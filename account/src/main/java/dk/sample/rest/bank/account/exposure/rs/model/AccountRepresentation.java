@@ -1,6 +1,5 @@
 package dk.sample.rest.bank.account.exposure.rs.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
