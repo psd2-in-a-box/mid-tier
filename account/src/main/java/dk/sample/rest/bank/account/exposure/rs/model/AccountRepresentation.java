@@ -47,6 +47,7 @@ public class AccountRepresentation {
         this(account, uriInfo);
         this.transactions = new ArrayList<>();
         this.transactions.addAll(transactions.stream()
+            .sorted((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()))
             .map(transaction -> new TransactionRepresentation(transaction, uriInfo))
             .collect(Collectors.toList()));
     }
