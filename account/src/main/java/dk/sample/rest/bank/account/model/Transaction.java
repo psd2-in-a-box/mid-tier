@@ -13,6 +13,8 @@ import javax.persistence.UniqueConstraint;
 
 import dk.sample.rest.common.persistence.jpa.AbstractAuditable;
 import java.time.Instant;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -55,6 +57,7 @@ public class Transaction extends AbstractAuditable {
     private String description;
 
     @Column(name = "TIMESTAMP")
+    @Convert(converter = InstantConverter.class)
     private Instant timestamp;
 
     protected Transaction() {
