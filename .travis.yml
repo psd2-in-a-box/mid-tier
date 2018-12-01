@@ -1,5 +1,5 @@
 language: java
-
+script: mvn clean package -Djava.net.preferIPv4Stack=true 
 jdk:
   - oraclejdk8
 
@@ -13,31 +13,31 @@ env:
 services:
   - docker
 
-before_install:
-  - openssl aes-256-cbc -K $encrypted_f4704c6cf078_key -iv $encrypted_f4704c6cf078_iv -in FutureFinance-9562e6d23f91.json.enc -out FutureFinance-9562e6d23f91.json -d
-  - gcloud auth activate-service-account --key-file FutureFinance-9562e6d23f91.json
+# as the cloud account is no longer active the stuff regarding that is is commented out
+
+#before_install:
+#  - openssl aes-256-cbc -K $encrypted_f4704c6cf078_key -iv $encrypted_f4704c6cf078_iv -in FutureFinance-9562e6d23f91.json.enc -out FutureFinance-9562e6d23f91.json -d
+#  - gcloud auth activate-service-account --key-file FutureFinance-9562e6d23f91.json
 
 install:
-  - export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-  - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-  - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-  - sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
-  - curl http://www-eu.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar xz
-  - export M2_HOME=$PWD/apache-maven-3.3.9
-  - export PATH=$PWD/apache-maven-3.3.9/bin:$PATH
+#  - export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+#  - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+#  - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+#  - sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
+  - curl https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip | tar xz
+  - export M2_HOME=$PWD/apache-maven-3.5.0
+  - export PATH=$PWD/apache-maven-3.5.0/bin:$PATH
 
-script: mvn clean package
+# after_success:
+#  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+#      docker build -t $NAME -t gcr.io/$PROJECT_ID/$NAME:$TRAVIS_COMMIT .;
+#    fi
 
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker build -t $NAME -t gcr.io/$PROJECT_ID/$NAME:$TRAVIS_COMMIT .;
-    fi
-
-deploy:
-  provider: script
-  script: scripts/deploy.sh gcr.io/$PROJECT_ID/$NAME:$TRAVIS_COMMIT
-  on:
-    branch: master
+#deploy:
+#  provider: script
+#  script: scripts/deploy.sh gcr.io/$PROJECT_ID/$NAME:$TRAVIS_COMMIT
+#  on:
+#    branch: master
 
 cache:
   directories:
