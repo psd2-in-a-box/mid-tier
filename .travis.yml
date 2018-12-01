@@ -24,7 +24,8 @@ install:
 #  - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 #  - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 #  - sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
-  - curl https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip | tar xz
+  - wget https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
+  - unzip -qq apache-maven-3.5.0-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.5.0
   - export PATH=$PWD/apache-maven-3.5.0/bin:$PATH
 
