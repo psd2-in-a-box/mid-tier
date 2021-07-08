@@ -1,5 +1,6 @@
 package dk.sample.rest.bank.virtualaccount.persistence;
 
+import dk.sample.rest.bank.virtualaccount.model.MicroPlan;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +56,7 @@ public class VirtualAccountArchivist {
         return q.getSingleResult();
     }
 
+    @LogDuration(limit = 50)
     public Optional<VirtualAccount> findAccountByAccountNumber(Long no) {
         try {
             return Optional.of(getAccount(no));
@@ -63,7 +65,35 @@ public class VirtualAccountArchivist {
         }
     }
 
-    public void save(VirtualAccount ac) {
-        em.persist(ac);
+    @LogDuration(limit = 50)
+    public List<MicroPlan> listPlans() {
+        TypedQuery<MicroPlan> q = em.createQuery("select mp from MicroPlan mp", MicroPlan.class);
+        return q.getResultList();
     }
+
+    @LogDuration(limit = 50)
+    public MicroPlan getPlan(String name) {
+        TypedQuery<MicroPlan> q = em.createQuery("select mp from MicroPlan mp where mp.name=:name",
+                MicroPlan.class);
+        q.setParameter("name", name);
+        return q.getSingleResult();
+    }
+
+    @LogDuration(limit = 50)
+    public Optional<MicroPlan> findPlan(String name) {
+        try {
+            return Optional.of(getPlan(name));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public void save(VirtualAccount account) {
+        em.persist(account);
+    }
+
+    public void save(MicroPlan plan) {
+        em.persist(plan);
+    }
+
 }

@@ -1,6 +1,7 @@
 package dk.sample.rest.bank.account.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import dk.sample.rest.common.persistence.jpa.AbstractAuditable;
-import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
